@@ -49,4 +49,27 @@ const createTask = async (req, res) => {
   }
 };
 
-export { isAdmin, createTask };
+const updateTask = async (req, res) => {};
+
+const deleteTask = async (req, res) => {
+  const { taskId } = req.params;
+  try {
+    const task = await Task.findById(taskId);
+
+    if (!task) {
+      return res.status(404).json({ message: "Task not found." });
+    }
+
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Only admins can delete tasks." });
+    }
+
+    await Task.findByIdAndDelete(taskId);
+
+    res.status(200).json({ message: "Task deleted successfully." });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting task." });
+  }
+};
+
+export { isAdmin, createTask, updateTask, deleteTask };
