@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: ["admin", "user", "guest"],
-    default: "user",
+    default: "admin",
   },
   isInvited: { type: Boolean, default: false },
   inviteToken: { type: String, unique: true },
