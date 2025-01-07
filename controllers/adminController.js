@@ -17,9 +17,7 @@ const signup = async (req, res) => {
       password: hashedPassword,
       role: "admin",
     });
-
     await newUser.save();
-
     res.status(201).json({ message: "Admin Register successfully." });
   } catch (err) {
     console.error(err);
@@ -46,7 +44,6 @@ const signin = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
-
     res.status(200).json({ message: "Signin successfully.", token });
   } catch (err) {
     console.error(err);
