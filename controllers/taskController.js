@@ -12,6 +12,7 @@ const isAdmin = (req, res, next) => {
     console.log("Token received:", token);
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log("Decoded token:", decoded);
+
     if (decoded.role !== "admin") {
       console.log("Not an admin.");
       return res

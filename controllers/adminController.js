@@ -1,6 +1,7 @@
 import User from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
 const signup = async (req, res) => {
   try {
@@ -51,4 +52,74 @@ const signin = async (req, res) => {
   }
 };
 
-export { signup, signin };
+// Admin creates a user and sends an invitation
+const inviteUser = async (req, res) => {
+  try {
+    const { username, email, role } = req.body;
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ message: "No token provided." });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (decoded.role !== "admin") {
+      return res.status(403).json({ message: "Only admins can invite users." });
+    }
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists." });
+    }
+    const inviteToken = crypto.randomBytes(16).toString("hex");
+    const newUser = new User({
+      username,
+      email,
+      role: role || "user",
+      isInvited: true,
+      inviteToken,
+      inviteSentAt: new Date(),
+    });
+    await newUser.save();
+
+    res.status(201).json({
+      message: "User invited successfully.",
+      inviteToken,
+      user: newUser,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error inviting user." });
+  }
+};
+
+const acceptInvitation = async (req, res) => {
+  try {
+    const { inviteToken, password } = req.body;
+    if (!inviteToken) {
+      return res.status(400).json({ message: "Invite token is required." });
+    }
+
+    const user = await User.findOne({ inviteToken, isInvited: true });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "Invalid or expired invite token." });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+    user.isInvited = false;
+    user.isAccepted = true;
+
+    // Use MongoDB's `unset` operator to remove the inviteToken field
+    user.inviteToken = undefined;
+
+    await user.save();
+
+    res.status(200).json({ message: "Invitation accepted successfully." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error accepting invitation." });
+  }
+};
+
+export { signup, signin, inviteUser, acceptInvitation };
