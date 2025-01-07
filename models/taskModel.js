@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const subtaskSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -35,4 +35,5 @@ const taskSchema = new mongoose.Schema({
   subtasks: [subtaskSchema], // Array of subtasks
 });
 
-module.exports = mongoose.model("Task", taskSchema);
+const taskModel = mongoose.model.task || mongoose.model("Task", taskSchema);
+export default taskModel;
