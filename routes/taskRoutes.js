@@ -9,7 +9,7 @@ import {
 const taskRouter = express.Router();
 
 taskRouter.post("/create", isAdmin, createTask);
-taskRouter.post("/update", isAdmin, updateTask);
+taskRouter.post("/update/:taskId", isAdmin, updateTask);
 taskRouter.delete("/delete/:taskId", isAdmin, deleteTask);
 
 export default taskRouter;

@@ -49,7 +49,46 @@ const createTask = async (req, res) => {
   }
 };
 
-const updateTask = async (req, res) => {};
+const updateTask = async (req, res) => {
+  const { taskId } = req.params;
+  const { title, description, status, dueDate, assignedTo } = req.body;
+
+  console.log("Task ID to update==============:", taskId);
+  console.log("Update fields==============:", {
+    title,
+    description,
+    status,
+    dueDate,
+    assignedTo,
+  });
+
+  try {
+    const task = await Task.findById(taskId);
+    console.log("------task------", task);
+
+    if (!task) {
+      return res.status(404).json({ message: "Task not found." });
+    }
+
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Only admins can update tasks." });
+    }
+
+    task.title = title || task.title;
+    task.description = description || task.description;
+    task.status = status || task.status;
+    task.dueDate = dueDate || task.dueDate;
+    task.assignedTo = assignedTo || task.assignedTo;
+
+    await task.save();
+    res.status(200).json({ message: "Task updated successfully.", task });
+  } catch (error) {
+    console.error("Error updating task:", error);
+    res
+      .status(500)
+      .json({ message: "Error updating task.", error: error.message });
+  }
+};
 
 const deleteTask = async (req, res) => {
   const { taskId } = req.params;
