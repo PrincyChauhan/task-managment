@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import commonFields from "./commonFields.js";
 
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
@@ -15,10 +16,15 @@ const userSchema = new mongoose.Schema({
     default: "admin",
   },
   isInvited: { type: Boolean, default: false },
+  invitedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "user",
+    default: null,
+  },
   inviteToken: { type: String, unique: true, sparse: true },
   inviteSentAt: { type: Date },
   isAccepted: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now },
+  ...commonFields,
 });
 
 const userModel = mongoose.model.user || mongoose.model("user", userSchema);

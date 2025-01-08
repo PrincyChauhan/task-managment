@@ -28,7 +28,8 @@ const isAdmin = (req, res, next) => {
 };
 
 const createTask = async (req, res) => {
-  const { title, description, status, dueDate, assignedTo } = req.body;
+  const { title, description, status, dueDate, assignedTo, subtasks } =
+    req.body;
 
   try {
     const newTask = new Task({
@@ -38,6 +39,7 @@ const createTask = async (req, res) => {
       dueDate,
       assignedTo,
       createdBy: req.user.userId,
+      subtasks: subtasks || [],
     });
 
     await newTask.save();
@@ -111,4 +113,50 @@ const deleteTask = async (req, res) => {
   }
 };
 
-export { isAdmin, createTask, updateTask, deleteTask };
+const getTask = async (req, res) => {
+  //   const { taskId } = req.params;
+  //   try {
+  //     const task = await Task.find();
+  //     if (!task) {
+  //       return res.status(404).json({
+  //         message: "Task not found",
+  //       });
+  //     }
+
+  //     if (req.user.role === "admin") {
+  //       return res.status(200).json({
+  //         message: "Task found",
+  //         task: task,
+  //       });
+  //     }
+
+  //     if (req.user.userId.toString() !== task.assignedTo.toString()) {
+  //       return res.status(403).json({
+  //         message: "You are not authorized to view this task.",
+  //       });
+  //     }
+  //     res.status(200).json({ task });
+  //   } catch (error) {
+  //     console.log("Error getting task:", error);
+  //     res.status(500).json({
+  //       message: "Error getting task.",
+  //       error: error.message,
+  //     });
+  //   }
+
+  try {
+    if (req.user.role === "admin") {
+      const tasks = await Task.find(); // Get all tasks
+      return res.status(200).json({ tasks });
+    }
+    const tasks = await Task.find({ assignedTo: req.user.userId });
+    res.status(200).json({ tasks });
+  } catch (error) {
+    console.error("Error fetching tasks:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching tasks.", error: error.message });
+  }
+};
+
+export { isAdmin, createTask, updateTask, deleteTask, getTask };

@@ -77,6 +77,7 @@ const inviteUser = async (req, res) => {
       isInvited: true,
       inviteToken,
       inviteSentAt: new Date(),
+      invitedBy: decoded.userId,
     });
     await newUser.save();
 
@@ -110,8 +111,7 @@ const acceptInvitation = async (req, res) => {
     user.isInvited = false;
     user.isAccepted = true;
 
-    // Use MongoDB's `unset` operator to remove the inviteToken field
-    user.inviteToken = undefined;
+    user.inviteToken = null;
 
     await user.save();
 
