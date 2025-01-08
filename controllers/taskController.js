@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 
 const isAdmin = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
+
   if (!token) {
     console.log("No token provided.");
     return res.status(401).json({ message: "No token provided." });
@@ -100,50 +101,22 @@ const deleteTask = async (req, res) => {
   }
 };
 
-const getTask = async (req, res) => {
-  //   const { taskId } = req.params;
-  //   try {
-  //     const task = await Task.find();
-  //     if (!task) {
-  //       return res.status(404).json({
-  //         message: "Task not found",
-  //       });
-  //     }
-
-  //     if (req.user.role === "admin") {
-  //       return res.status(200).json({
-  //         message: "Task found",
-  //         task: task,
-  //       });
-  //     }
-
-  //     if (req.user.userId.toString() !== task.assignedTo.toString()) {
-  //       return res.status(403).json({
-  //         message: "You are not authorized to view this task.",
-  //       });
-  //     }
-  //     res.status(200).json({ task });
-  //   } catch (error) {
-  //     console.log("Error getting task:", error);
-  //     res.status(500).json({
-  //       message: "Error getting task.",
-  //       error: error.message,
-  //     });
-  //   }
-
+const getTasksByAdmin = async (req, res) => {
   try {
-    if (req.user.role === "admin") {
-      const tasks = await Task.find(); // Get all tasks
-      return res.status(200).json({ tasks });
+    const tasks = await Task.find({ isDeleted: false });
+    if (!tasks) {
+      return res.status(400).json({
+        message: "Task not found",
+      });
     }
-    const tasks = await Task.find({ assignedTo: req.user.userId });
-    res.status(200).json({ tasks });
+    return res.status(200).json({ tasks });
   } catch (error) {
-    console.error("Error fetching tasks:", error);
-    res
-      .status(500)
-      .json({ message: "Error fetching tasks.", error: error.message });
+    console.log(error);
+    res.status(500).json({
+      message: "Error getting task.",
+      error: error.message,
+    });
   }
 };
 
-export { isAdmin, createTask, updateTask, deleteTask, getTask };
+export { isAdmin, createTask, updateTask, deleteTask, getTasksByAdmin };
