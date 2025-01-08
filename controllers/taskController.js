@@ -143,6 +143,31 @@ const getTasksByUser = async (req, res) => {
   }
 };
 
+const updateTaskStatus = async (req, res) => {
+  try {
+    const { taskId, status } = req.body;
+    const task = await Task.findById(taskId);
+    console.log("----Task----------------------", task);
+
+    if (!task) {
+      return res.status(404).json({
+        message: "Task not found",
+      });
+    }
+    task.status = status;
+    await task.save();
+    res.status(200).json({
+      message: "Task status updated successfully",
+      task,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error in updating task status",
+    });
+  }
+};
+
 export {
   isAdmin,
   createTask,
@@ -150,4 +175,5 @@ export {
   deleteTask,
   getTasksByAdmin,
   getTasksByUser,
+  updateTaskStatus,
 };
