@@ -119,4 +119,35 @@ const getTasksByAdmin = async (req, res) => {
   }
 };
 
-export { isAdmin, createTask, updateTask, deleteTask, getTasksByAdmin };
+const getTasksByUser = async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    const tasks = await Task.find({
+      assignedTo: userId,
+      isDeleted: false,
+    });
+    if (!tasks || tasks.length === 0) {
+      return res.status(404).json({
+        message: "No tasks found for this user.",
+      });
+    }
+    res.status(200).json({
+      tasks,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error getting task.",
+      error: error.message,
+    });
+  }
+};
+
+export {
+  isAdmin,
+  createTask,
+  updateTask,
+  deleteTask,
+  getTasksByAdmin,
+  getTasksByUser,
+};
