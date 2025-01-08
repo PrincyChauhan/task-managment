@@ -9,7 +9,7 @@ const subtaskSchema = new mongoose.Schema({
     enum: ["pending", "in-progress", "completed"],
     default: "pending",
   },
-  createdAt: { type: Date, default: Date.now },
+  ...commonFields,
 });
 
 const taskSchema = new mongoose.Schema({
@@ -32,9 +32,13 @@ const taskSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-  //   createdAt: { type: Date, default: Date.now },
-  //   updatedAt: { type: Date, default: Date.now },
-  subtasks: [subtaskSchema], // Array of subtasks
+
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
+
+  subtasks: [subtaskSchema],
   ...commonFields,
 });
 

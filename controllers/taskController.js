@@ -96,16 +96,15 @@ const deleteTask = async (req, res) => {
   const { taskId } = req.params;
   try {
     const task = await Task.findById(taskId);
-
     if (!task) {
       return res.status(404).json({ message: "Task not found." });
     }
-
     if (req.user.role !== "admin") {
       return res.status(403).json({ message: "Only admins can delete tasks." });
     }
-
-    await Task.findByIdAndDelete(taskId);
+    task.isDeleted = true;
+    task.deletedAt = new Date();
+    await task.save();
 
     res.status(200).json({ message: "Task deleted successfully." });
   } catch (error) {
