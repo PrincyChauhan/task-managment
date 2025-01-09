@@ -1,6 +1,6 @@
 import Task from "../models/taskModel.js";
 
-const createSubtask = async (req, res) => {
+const createSubTask = async (req, res) => {
   try {
     const { taskId, title, description } = req.body;
     const task = await Task.findById(taskId);
@@ -27,6 +27,39 @@ const createSubtask = async (req, res) => {
     res.status(500).json({
       message: "Error in creating subtask",
       error: error.message,
+    });
+  }
+};
+
+const updateSubTask = async (req, res) => {
+  try {
+    const { taskId, subtaskId, title, description } = req.body;
+    const task = await Task.findById(taskId);
+    if (!task) {
+      return res.status(404).json({
+        message: "Task not found",
+      });
+    }
+    const subtask = task.subtasks.id(subtaskId);
+    if (!subtask) {
+      return res.status(404).json({
+        message: "Subtask not found",
+      });
+    }
+    if (title !== undefined) subtask.title = title;
+    if (description !== undefined) subtask.description = description;
+
+    subtask.updateAt = new Date();
+    task.updateAt = new Date();
+    await task.save();
+    res.status(200).json({
+      message: "Subtask updated successfully",
+      subtask,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error in updating subtask",
     });
   }
 };
@@ -63,4 +96,4 @@ const updateSubTaskStatus = async (req, res) => {
   }
 };
 
-export { updateSubTaskStatus, createSubtask };
+export { updateSubTaskStatus, createSubTask, updateSubTask };
