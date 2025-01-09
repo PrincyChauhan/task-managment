@@ -1,5 +1,5 @@
 import Task from "../models/taskModel.js";
-import sendMail from "../sendMail.js";
+import sendMail from "../utils/sendMail.js";
 import moment from "moment-timezone";
 
 const createTask = async (req, res) => {

@@ -2,7 +2,7 @@ import User from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import sendMail from "../sendMail.js";
+import sendMail from "../utils/sendMail.js";
 
 const signup = async (req, res) => {
   try {
