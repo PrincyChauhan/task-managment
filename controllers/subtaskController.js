@@ -64,6 +64,52 @@ const updateSubTask = async (req, res) => {
   }
 };
 
+const getsubTasks = async (req, res) => {
+  try {
+    const { taskId } = req.params;
+    const task = await Task.findById(taskId);
+    if (!task) {
+      return res.status(404).json({
+        message: "Task not found",
+      });
+    }
+    return res.status(200).json({
+      subtasks: task.subtasks,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error in getting subtasks",
+    });
+  }
+};
+
+const deleteSubTask = async (req, res) => {
+  try {
+    const { taskId, subtaskId } = req.body;
+
+    // Find and update the task by removing the subtask
+    const task = await Task.findByIdAndUpdate(
+      taskId,
+      {
+        $pull: { subtasks: { _id: subtaskId } }, // Remove the subtask with the given ID
+        updatedAt: new Date(), // Update the updatedAt field
+      },
+      { new: true } // Return the updated task
+    );
+
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    res.status(200).json({ message: "Subtask deleted successfully", task });
+  } catch (error) {
+    console.error("Error deleting subtask:", error.message);
+    res
+      .status(500)
+      .json({ message: "Error deleting subtask", error: error.message });
+  }
+};
 const updateSubTaskStatus = async (req, res) => {
   try {
     const { taskId, subtaskId, isCompleted } = req.body;
@@ -96,4 +142,10 @@ const updateSubTaskStatus = async (req, res) => {
   }
 };
 
-export { updateSubTaskStatus, createSubTask, updateSubTask };
+export {
+  updateSubTaskStatus,
+  createSubTask,
+  updateSubTask,
+  deleteSubTask,
+  getsubTasks,
+};

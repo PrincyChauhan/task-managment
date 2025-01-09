@@ -1,6 +1,5 @@
 import express from "express";
 import {
-  isAdmin,
   createTask,
   updateTask,
   deleteTask,
@@ -8,7 +7,7 @@ import {
   getTasksByUser,
   updateTaskStatus,
 } from "../controllers/taskController.js";
-
+import { isAdmin } from "../middlewares/auth.js";
 const taskRouter = express.Router();
 
 taskRouter.post("/create", isAdmin, createTask);
