@@ -1,4 +1,7 @@
 import Task from "../models/taskModel.js";
+import sendMail from "../sendMail.js";
+import moment from "moment-timezone";
+
 const createTask = async (req, res) => {
   const { title, description, status, dueDate, assignedTo, subtasks } =
     req.body;
@@ -137,6 +140,42 @@ const updateTaskStatus = async (req, res) => {
   }
 };
 
+const sendReminderForDueDate = async (req, res) => {
+  try {
+    const tasksDueSoon = await Task.find({
+      dueDate: {
+        $gte: moment().toDate(),
+        $lt: moment().add(1, "days").toDate(),
+      },
+      status: {
+        $ne: "completed",
+      },
+    }).populate("assignedTo", "email");
+
+    tasksDueSoon.forEach(async (task) => {
+      const { assignedTo, title, dueDate } = task;
+      const emailSubject = `Reminder: Task due soon: ${title}`;
+      const emailMessage = `
+      <h1>Reminder: ${title}</h1>
+      <p>This is a reminder that your task is due on ${moment(dueDate).format(
+        "MMMM Do YYYY, h:mm A"
+      )}</p>
+      <p>Best regards, Task Manager Team</p>
+    `;
+      await sendMail(assignedTo, emailSubject, emailMessage);
+      console.log("Reminder sent sucessfully");
+      return res.status(200).json({
+        message: "Reminder sent successfully",
+      });
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error in sending reminder",
+    });
+  }
+};
+
 export {
   createTask,
   updateTask,
@@ -144,4 +183,5 @@ export {
   getTasksByAdmin,
   getTasksByUser,
   updateTaskStatus,
+  sendReminderForDueDate,
 };

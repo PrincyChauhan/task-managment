@@ -27,5 +27,5 @@ const userSchema = new mongoose.Schema({
   ...commonFields,
 });
 
-const userModel = mongoose.model.user || mongoose.model("user", userSchema);
+const userModel = mongoose.models.User || mongoose.model("User", userSchema);
 export default userModel;
