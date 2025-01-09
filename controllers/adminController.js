@@ -2,6 +2,7 @@ import User from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import sendMail from "../sendMail.js";
 
 const signup = async (req, res) => {
   try {
@@ -81,6 +82,16 @@ const inviteUser = async (req, res) => {
     });
     await newUser.save();
 
+    const emailSubject = "Invitation to join Task Manager";
+    const emailMessage = `
+      <h1>Hello ${username},</h1>
+      <p>You have been invited to join our platform as a ${role || "user"}.</p>
+      <p>Use the following token to complete your registration:</p>
+      <code>${inviteToken}</code>
+      <p>Note: This token is valid for 24hr only.</p>
+    `;
+
+    await sendMail(email, emailSubject, emailMessage);
     res.status(201).json({
       message: "User invited successfully.",
       inviteToken,
