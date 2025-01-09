@@ -88,14 +88,13 @@ const deleteSubTask = async (req, res) => {
   try {
     const { taskId, subtaskId } = req.body;
 
-    // Find and update the task by removing the subtask
     const task = await Task.findByIdAndUpdate(
       taskId,
       {
-        $pull: { subtasks: { _id: subtaskId } }, // Remove the subtask with the given ID
-        updatedAt: new Date(), // Update the updatedAt field
+        $pull: { subtasks: { _id: subtaskId } },
+        updatedAt: new Date(),
       },
-      { new: true } // Return the updated task
+      { new: true }
     );
 
     if (!task) {
