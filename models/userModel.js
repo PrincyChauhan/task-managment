@@ -24,6 +24,11 @@ const userSchema = new mongoose.Schema({
   inviteToken: { type: String, unique: true, sparse: true },
   inviteSentAt: { type: Date },
   isAccepted: { type: Boolean, default: false },
+
+  // Fields for forgot password functionality
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date },
+
   ...commonFields,
 });
 

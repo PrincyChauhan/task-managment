@@ -91,7 +91,8 @@ const inviteUser = async (req, res) => {
       <p>Note: This token is valid for 24hr only.</p>
     `;
 
-    await sendMail(email, emailSubject, emailMessage);
+    await sendMail({ email }, emailSubject, emailMessage);
+
     res.status(201).json({
       message: "User invited successfully.",
       inviteToken,
@@ -133,4 +134,87 @@ const acceptInvitation = async (req, res) => {
   }
 };
 
-export { signup, signin, inviteUser, acceptInvitation };
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({
+      email,
+    });
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const resetTokenExpries = Date.now() + 3600000;
+
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpries = resetTokenExpries;
+
+    await user.save();
+
+    console.log(
+      `Password reset link: http://localhost:5000/reset-password/${resetToken}`
+    );
+
+    const resetPasswordLink = `http://localhost:5000/reset-password/${resetToken}`;
+
+    const subject = "Password Reset Request";
+    const message = `
+    <h1>Password Reset Request</h1>
+    <p>Hi ${user.username},</p>
+    <p>You have requested to reset your password. Click the link below to reset it:</p>
+    <a href="${resetPasswordLink}" target="_blank">Reset Password</a>
+    <p>If you did not request this, please ignore this email.</p>
+    <p>This link will expire in 1 hour.</p>
+  `;
+
+    console.log("---------------");
+    await sendMail({ email: user.email }, subject, message);
+
+    console.log("---------------");
+
+    res.status(200).json({
+      message: "Password reset email sent successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error in sending password reset email",
+      error,
+    });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+  try {
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+    if (!user) {
+      return res.status(400).json({
+        message: "Invalid or expired token",
+      });
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined;
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error in reseting password",
+      error,
+    });
+  }
+};
+
+export {
+  signup,
+  signin,
+  inviteUser,
+  acceptInvitation,
+  forgotPassword,
+  resetPassword,
+};
