@@ -214,17 +214,20 @@ const resetPassword = async (req, res) => {
 const createUser = async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
-
-    // Check for authorization token
     const token = req.headers.authorization?.split(" ")[1];
+    console.log("------------token backend-----------", token);
     if (!token) {
       return res.status(401).json({ message: "No token provided." });
     }
 
     // Verify token and check role
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("------------decoded backend-----------", decoded);
+
     if (decoded.role !== "admin") {
-      return res.status(403).json({ message: "Only admins can create users." });
+      return res
+        .status(403)
+        .json({ success: false, message: "Only admins can create users." });
     }
 
     // Check if the user already exists
@@ -247,14 +250,43 @@ const createUser = async (req, res) => {
 
     // Respond with success
     res.status(200).json({
+      success: true,
       message: "User created successfully.",
       user: newUser,
     });
   } catch (error) {
-    // Catch and log errors
-    console.error(error);
+    console.error("Token verification failed:", error); // Log error details
     res.status(500).json({
       message: "Error creating user",
+      error: error.message,
+    });
+  }
+};
+
+const getUsers = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    console.log("------------token backend-----------", token);
+    if (!token) {
+      return res.status(401).json({ message: "No token provided." });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("------------decoded backend-----------", decoded);
+
+    if (decoded.role !== "admin") {
+      return res
+        .status(403)
+        .json({ success: false, message: "Only admins can view users." });
+    }
+
+    const users = await User.find({ role: "user" });
+    console.log(users, "-  -------------users----");
+    res.status(200).json({ success: true, users });
+  } catch (error) {
+    console.error("Token verification failed:", error);
+    res.status(500).json({
+      message: "Error fetching users",
       error: error.message,
     });
   }
@@ -268,4 +300,5 @@ export {
   forgotPassword,
   resetPassword,
   createUser,
+  getUsers,
 };

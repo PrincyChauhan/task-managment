@@ -26,6 +26,8 @@ const LoginForm = () => {
         setEmail("");
         setPassword("");
 
+        localStorage.setItem("token", response.data.token);
+
         setTimeout(() => {
           navigate("/dashboard");
         }, 100);
@@ -58,7 +60,7 @@ const LoginForm = () => {
           )}
 
           <div className="mb-4">
-            <lable className="block text-gray-700 text-left mb-2">Email</lable>
+            <label className="block text-gray-700 text-left mb-2">Email</label>
             <input
               type="email"
               placeholder="Email"
@@ -69,11 +71,11 @@ const LoginForm = () => {
             />
           </div>
           <div className="mb-4">
-            <lable className="block text-gray-700 text-left mb-2">
+            <label className="block text-gray-700 text-left mb-2">
               Password
-            </lable>
+            </label>
             <input
-              type="text"
+              type="Password"
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-1 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="Password"

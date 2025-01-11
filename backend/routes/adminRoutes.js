@@ -7,6 +7,7 @@ import {
   forgotPassword,
   resetPassword,
   createUser,
+  getUsers,
 } from "../controllers/adminController.js";
 
 const adminRouter = express.Router();
@@ -17,6 +18,7 @@ adminRouter.post("/create-user", createUser);
 adminRouter.post("/invite", inviteUser);
 adminRouter.post("/accept-invitation", acceptInvitation);
 
+adminRouter.get("/users", getUsers);
 //forgot password
 
 adminRouter.post("/forgot-password", forgotPassword);
