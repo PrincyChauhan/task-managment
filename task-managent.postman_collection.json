@@ -1,0 +1,692 @@
+{
+	"info": {
+		"_postman_id": "788fd858-f046-4bfb-984b-ede9ef400bf0",
+		"name": "task-managent",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24538349"
+	},
+	"item": [
+		{
+			"name": "user",
+			"item": []
+		},
+		{
+			"name": "admin",
+			"item": [
+				{
+					"name": "admin_signup",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"princy1\",\r\n  \"email\": \"princychauhan27@gmail.com\",\r\n  \"password\": \"password123\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/admin/signup",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"admin",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "admin_singin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"princychauhan27@gmail.com\",\r\n  \"password\": \"password123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/admin/signin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"admin",
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "invite-user",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzgwYzE5ZWYwM2ZmNDg2OGI2YjAwMzEiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzY0OTE0MjgsImV4cCI6MTczNjQ5NTAyOH0.z6YAADkQal9rgdrp6uI2JUPGkF2Ls8pAP8mod9enrG8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// {\r\n//   \"username\": \"pc27\",\r\n//   \"email\": \"princychauhan27@gmail.com\",\r\n//   \"role\": \"user\"\r\n// }\r\n{\r\n    \"email\":\"test@mail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/admin/invite",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"admin",
+								"invite"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-users",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzgyMmM3ZTUxN2NkYWZiODc3MWEwMmEiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzY1OTA3ODUsImV4cCI6MTczNjU5NDM4NX0.1Tw7nlVi8kBwjFCA_jXCDzu7GXcWfJ0AzhfNhGvH5WM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/admin/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"admin",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "accpect-invitation",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"inviteToken\": \"9398472158b8de36d727a6c28516bb5f\",\r\n  \"password\": \"user-new-password\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/admin/accept-invitation",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"admin",
+								"accept-invitation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "forgot-password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n      \"email\": \"chauhanprincee7@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/admin/forgot-password",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"admin",
+								"forgot-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reset-password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"token\": \"9a2e96cfb76273dfa4a8fa98cc1a8470c889a2581761d1cf9e354d01b2ff1e75\",\r\n  \"newPassword\": \"newPassword123\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/admin/reset-password",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"admin",
+								"reset-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-user",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzgyMmM3ZTUxN2NkYWZiODc3MWEwMmEiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzY1OTA3ODUsImV4cCI6MTczNjU5NDM4NX0.1Tw7nlVi8kBwjFCA_jXCDzu7GXcWfJ0AzhfNhGvH5WM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"pc_daiict\", \"email\":\"202311002@daiict.ac.in\", \"role\":\"user\",\"password\":\"test\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/admin/create-user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"admin",
+								"create-user"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "task",
+			"item": [
+				{
+					"name": "create-task",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzgwYzE5ZWYwM2ZmNDg2OGI2YjAwMzEiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzY0OTE0MjgsImV4cCI6MTczNjQ5NTAyOH0.z6YAADkQal9rgdrp6uI2JUPGkF2Ls8pAP8mod9enrG8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"Princy test\",\r\n  \"description\": \"Create a responsive homepage for the website.\",\r\n  \"dueDate\": \"2025-01-11\",\r\n  \"assignedTo\": \"6780c1d2f03ff4868b6b0039\", \r\n  \"subtasks\": [\r\n    {\r\n      \"title\": \"Create wireframe\",\r\n      \"description\": \"Design the wireframe for the homepage.\"\r\n    },\r\n    {\r\n      \"title\": \"Develop UI\",\r\n      \"description\": \"Code the UI for the homepage.\"\r\n    }\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/task/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"task",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "gettasksbyadmin",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzgwYzE5ZWYwM2ZmNDg2OGI2YjAwMzEiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzY0OTE0MjgsImV4cCI6MTczNjQ5NTAyOH0.z6YAADkQal9rgdrp6uI2JUPGkF2Ls8pAP8mod9enrG8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/task/tasks",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"task",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "gettasksbyusers",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzdlMDdhYjkyODA1MDM2OTdjNjg1NDAiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzYzMjA3NDQsImV4cCI6MTczNjMyNDM0NH0.J5QdXZi-KT6J1IHmrRhdYmacC-QKzqc9M0dd0e4okHs",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/task/user/6780c1d2f03ff4868b6b0039",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"task",
+								"user",
+								"6780c1d2f03ff4868b6b0039"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-task",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzdlMDdhYjkyODA1MDM2OTdjNjg1NDAiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzYzMTY2ODIsImV4cCI6MTczNjMyMDI4Mn0.pHqDaK-cVnBtksUx6jwJVG1jVaJ4ePxuow6-OITFY6Q",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/task/delete/677e186b6bb9b882f3c29544",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"task",
+								"delete",
+								"677e186b6bb9b882f3c29544"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-task",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzdlMDdhYjkyODA1MDM2OTdjNjg1NDAiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzYzMTY2ODIsImV4cCI6MTczNjMyMDI4Mn0.pHqDaK-cVnBtksUx6jwJVG1jVaJ4ePxuow6-OITFY6Q",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n//   \"title\": \"Updated Task Title\",\r\n  \"description\": \"Updated task description.\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/task/update/677e1b5ea4d3ed73847c11c0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"task",
+								"update",
+								"677e1b5ea4d3ed73847c11c0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-task-status",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"taskId\": \"677e6cf0b8cd3e6af724c433\",\r\n  \"status\": \"completed\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/task/status",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"task",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "due_date_reminder",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/task/reminder",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"task",
+								"reminder"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "subtasks",
+			"item": [
+				{
+					"name": "update-subtask-status",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"taskId\": \"677e6cf0b8cd3e6af724c433\",\r\n  \"subtaskId\": \"677e6cf0b8cd3e6af724c435\",\r\n  \"isCompleted\": true\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/task/subtask/status",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"task",
+								"subtask",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-subtask",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzdlNTU0YzYzNzI0ZTFkMjNlNDg3YzIiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzYzNDM3NjEsImV4cCI6MTczNjM0NzM2MX0.HQk5nLOTMqJv2awJTAZK-5da4_bNX6g0EepMDTXzvJo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"taskId\":\"677e6cf0b8cd3e6af724c433\",\r\n    \"title\":\"test\",\r\n    \"description\":\"test\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/task/subtask/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"task",
+								"subtask",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-subtask",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzdlNTU0YzYzNzI0ZTFkMjNlNDg3YzIiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzYzOTg1MjMsImV4cCI6MTczNjQwMjEyM30.OhBAmh3Bmg0gMJkd89aybZH1Bm-H8WoCzvUR6REJJUI",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"taskId\":\"677e7d8b6ee5ae82846c11d0\",\r\n    \"subtaskId\":\"677e7d8b6ee5ae82846c11d1\",\r\n    \"title\":\"test\",\r\n    \"description\":\"test\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/task/subtask/update",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"task",
+								"subtask",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-subtasks",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzdlNTU0YzYzNzI0ZTFkMjNlNDg3YzIiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzYzOTg1MjMsImV4cCI6MTczNjQwMjEyM30.OhBAmh3Bmg0gMJkd89aybZH1Bm-H8WoCzvUR6REJJUI",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/task/subtask/677e7d8b6ee5ae82846c11d0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"task",
+								"subtask",
+								"677e7d8b6ee5ae82846c11d0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deletet-subtasks",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzdlNTU0YzYzNzI0ZTFkMjNlNDg3YzIiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzYzOTg1MjMsImV4cCI6MTczNjQwMjEyM30.OhBAmh3Bmg0gMJkd89aybZH1Bm-H8WoCzvUR6REJJUI",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"taskId\":\"677e7d8b6ee5ae82846c11d0\",\r\n    \"subtaskId\":\"677e7d8b6ee5ae82846c11d2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/task/subtask/delete",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"task",
+								"subtask",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
