@@ -32,10 +32,14 @@ const updateTask = async (req, res) => {
   try {
     const task = await Task.findById(taskId);
     if (!task) {
-      return res.status(404).json({ message: "Task not found." });
+      return res
+        .status(404)
+        .json({ success: "false", message: "Task not found." });
     }
     if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Only admins can update tasks." });
+      return res
+        .status(403)
+        .json({ success: "false", message: "Only admins can update tasks." });
     }
     task.title = title || task.title;
     task.description = description || task.description;
@@ -46,12 +50,15 @@ const updateTask = async (req, res) => {
     task.updatedAt = new Date();
 
     await task.save();
-    res.status(200).json({ message: "Task updated successfully.", task });
+    res
+      .status(200)
+      .json({ success: "true", message: "Task updated successfully.", task });
   } catch (error) {
     console.error("Error updating task:", error);
-    res
-      .status(500)
-      .json({ message: "Error updating task.", error: error.message });
+    res.status(500).json({
+      message: "Error updating task.",
+      error: error.message,
+    });
   }
 };
 

@@ -5,7 +5,7 @@ import SignupForm from "./components/SignupForm";
 import LoginForm from "./components/LoginForm";
 import Dashboard from "./components/Dashboard";
 import UserCreation from "./components/UserCreation";
-
+import TaskCreation from "./components/TaskCreation";
 function App() {
   return (
     <Router>
@@ -15,6 +15,7 @@ function App() {
           <Route path="/signin" element={<LoginForm />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin/user" element={<UserCreation />} />
+          <Route path="/dashboard/tasks" element={<TaskCreation />} />
         </Routes>
       </div>
     </Router>

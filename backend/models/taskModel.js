@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import commonFields from "./commonFields.js";
 
 const subtaskSchema = new mongoose.Schema({
-  title: { type: String, required: true },
+  title: { type: String },
   description: { type: String },
   isCompleted: { type: Boolean, default: false },
   ...commonFields,
