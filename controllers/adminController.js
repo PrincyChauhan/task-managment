@@ -9,7 +9,9 @@ const signup = async (req, res) => {
     const { username, email, password } = req.body;
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "Admin already exists." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Admin already exists." });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -20,7 +22,9 @@ const signup = async (req, res) => {
       role: "admin",
     });
     await newUser.save();
-    res.status(201).json({ message: "Admin Register successfully." });
+    res
+      .status(201)
+      .json({ success: true, message: "Admin Register successfully." });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error during signup." });
@@ -32,75 +36,72 @@ const signin = async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: "Admin not found." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Admin not found." });
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid credentials." });
     }
     if (user.role !== "admin") {
-      return res.status(403).json({ message: "Only admins can sign in." });
+      return res
+        .status(403)
+        .json({ success: false, message: "Only admins can sign in." });
     }
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
-    res.status(200).json({ message: "Signin successfully.", token });
+    res
+      .status(200)
+      .json({ success: true, message: "Signin successfully.", token });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Error during signin." });
+    res.status(500).json({ success: false, message: "Error during signin." });
   }
 };
 
 // Admin creates a user and sends an invitation
 const inviteUser = async (req, res) => {
   try {
-    const { username, email, role } = req.body;
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) {
-      return res.status(401).json({ message: "No token provided." });
+    const { email } = req.body;
+
+    // Find the user by email
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "User not found. Please create the user first." });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (decoded.role !== "admin") {
-      return res.status(403).json({ message: "Only admins can invite users." });
-    }
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists." });
-    }
+    // Generate an invitation token
     const inviteToken = crypto.randomBytes(16).toString("hex");
-    const newUser = new User({
-      username,
-      email,
-      role: role || "user",
-      isInvited: true,
-      inviteToken,
-      inviteSentAt: new Date(),
-      invitedBy: decoded.userId,
-    });
-    await newUser.save();
+    user.inviteToken = inviteToken;
+    user.isInvited = true;
+    user.inviteSentAt = new Date();
+    await user.save();
 
+    // Send invitation email
     const emailSubject = "Invitation to join Task Manager";
     const emailMessage = `
-      <h1>Hello ${username},</h1>
-      <p>You have been invited to join our platform as a ${role || "user"}.</p>
-      <p>Use the following token to complete your registration:</p>
-      <code>${inviteToken}</code>
-      <p>Note: This token is valid for 24hr only.</p>
-    `;
+        <h1>Hello ${user.username},</h1>
+        <p>You have been invited to join our platform as a ${user.role}.</p>
+        <p>Use the following token to complete your registration:</p>
+        <code>${inviteToken}</code>
+        <p>Note: This token is valid for 24hr only.</p>
+      `;
 
-    await sendMail({ email }, emailSubject, emailMessage);
+    await sendMail({ email: user.email }, emailSubject, emailMessage);
 
-    res.status(201).json({
-      message: "User invited successfully.",
-      inviteToken,
-      user: newUser,
-    });
+    res.status(200).json({ message: "Invitation sent successfully." });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error inviting user." });
+    res.status(500).json({ message: "Error sending invitation." });
   }
 };
 
@@ -210,6 +211,55 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const createUser = async (req, res) => {
+  try {
+    const { username, email, password, role } = req.body;
+
+    // Check for authorization token
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ message: "No token provided." });
+    }
+
+    // Verify token and check role
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (decoded.role !== "admin") {
+      return res.status(403).json({ message: "Only admins can create users." });
+    }
+
+    // Check if the user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        message: "User already exists.",
+      });
+    }
+
+    // Create new user
+    const newUser = new User({
+      username,
+      email,
+      password,
+      role: role || "user",
+      isInvited: false,
+    });
+    await newUser.save();
+
+    // Respond with success
+    res.status(200).json({
+      message: "User created successfully.",
+      user: newUser,
+    });
+  } catch (error) {
+    // Catch and log errors
+    console.error(error);
+    res.status(500).json({
+      message: "Error creating user",
+      error: error.message,
+    });
+  }
+};
+
 export {
   signup,
   signin,
@@ -217,4 +267,5 @@ export {
   acceptInvitation,
   forgotPassword,
   resetPassword,
+  createUser,
 };

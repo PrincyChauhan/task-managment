@@ -2,11 +2,13 @@ import express from "express";
 import adminRouter from "./routes/adminRoutes.js";
 import taskRouter from "./routes/taskRoutes.js";
 import subtaskRouter from "./routes/subTaskRoute.js";
+import cors from "cors";
 import { ConnectDB } from "./config/db.js";
 import "dotenv/config.js";
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 ConnectDB();
 
