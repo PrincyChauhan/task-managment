@@ -92,6 +92,8 @@ const UserListing = () => {
     fetchUsers();
   }, []);
 
+  console.log(users);
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="bg-white p-6 rounded shadow-md">
@@ -121,17 +123,23 @@ const UserListing = () => {
                   {emailSent[user.email] ? (
                     "Yes"
                   ) : (
-                    <button
-                      className={`px-4 py-2 text-white rounded ${
-                        loadingUserId === user.email
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-blue-500 hover:bg-blue-700"
-                      }`}
-                      disabled={loadingUserId === user.email}
-                      onClick={() => sendInvite(user.email)}
-                    >
-                      {loadingUserId === user.email ? "Sending..." : "No"}
-                    </button>
+                    <>
+                      {user.isInvited ? (
+                        "Yes"
+                      ) : (
+                        <button
+                          className={`px-4 py-2 text-white rounded ${
+                            loadingUserId === user.email
+                              ? "bg-gray-400 cursor-not-allowed"
+                              : "bg-blue-500 hover:bg-blue-700"
+                          }`}
+                          disabled={loadingUserId === user.email}
+                          onClick={() => sendInvite(user.email)}
+                        >
+                          {loadingUserId === user.email ? "Sending..." : "No"}
+                        </button>
+                      )}
+                    </>
                   )}
                 </td>
                 <td className="px-4 py-2 border">

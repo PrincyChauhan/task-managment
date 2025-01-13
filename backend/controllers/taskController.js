@@ -1,12 +1,19 @@
 import Task from "../models/taskModel.js";
 import sendMail from "../utils/sendMail.js";
 import moment from "moment-timezone";
+import mongoose from "mongoose";
 
 const createTask = async (req, res) => {
   const { title, description, status, dueDate, assignedTo, subtasks } =
     req.body;
 
   try {
+    if (!mongoose.Types.ObjectId.isValid(assignedTo)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid User ID for assignedTo",
+      });
+    }
     const newTask = new Task({
       title,
       description,
@@ -18,11 +25,14 @@ const createTask = async (req, res) => {
     });
 
     await newTask.save();
-    res
-      .status(201)
-      .json({ message: "Task created successfully.", task: newTask });
+    res.status(201).json({
+      success: true,
+      message: "Task created successfully.",
+      task: newTask,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Error creating task." });
+    console.log("Error creating task:", error);
+    res.status(500).json({ success: false, message: "Error creating task." });
   }
 };
 
@@ -34,12 +44,12 @@ const updateTask = async (req, res) => {
     if (!task) {
       return res
         .status(404)
-        .json({ success: "false", message: "Task not found." });
+        .json({ success: false, message: "Task not found." });
     }
     if (req.user.role !== "admin") {
       return res
         .status(403)
-        .json({ success: "false", message: "Only admins can update tasks." });
+        .json({ success: false, message: "Only admins can update tasks." });
     }
     task.title = title || task.title;
     task.description = description || task.description;

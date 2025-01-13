@@ -27,7 +27,7 @@ const signup = async (req, res) => {
       .json({ success: true, message: "Admin Register successfully." });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Error during signup." });
+    res.status(500).json({ success: false, message: "Error during signup." });
   }
 };
 
@@ -79,9 +79,10 @@ const inviteUser = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res
-        .status(404)
-        .json({ message: "User not found. Please create the user first." });
+      return res.status(404).json({
+        success: false,
+        message: "User not found. Please create the user first.",
+      });
     }
     // Generate an invitation token
     const inviteToken = crypto.randomBytes(16).toString("hex");
@@ -225,30 +226,12 @@ const resetPassword = async (req, res) => {
 const createUser = async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
-    const token = req.headers.authorization?.split(" ")[1];
-    console.log("------------token backend-----------", token);
-    if (!token) {
-      return res.status(401).json({ message: "No token provided." });
-    }
-
-    // Verify token and check role
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("------------decoded backend-----------", decoded);
-
-    if (decoded.role !== "admin") {
-      return res
-        .status(403)
-        .json({ success: false, message: "Only admins can create users." });
-    }
-
-    // Check if the user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
         message: "User already exists.",
       });
     }
-
     // Create new user
     const newUser = new User({
       username,
@@ -266,7 +249,7 @@ const createUser = async (req, res) => {
       user: newUser,
     });
   } catch (error) {
-    console.error("Token verification failed:", error); // Log error details
+    console.error("Token verification failed:", error);
     res.status(500).json({
       message: "Error creating user",
       error: error.message,
@@ -276,27 +259,12 @@ const createUser = async (req, res) => {
 
 const getUsers = async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
-    console.log("------------token backend-----------", token);
-    if (!token) {
-      return res.status(401).json({ message: "No token provided." });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("------------decoded backend-----------", decoded);
-
-    if (decoded.role !== "admin") {
-      return res
-        .status(403)
-        .json({ success: false, message: "Only admins can view users." });
-    }
-
     const users = await User.find({ role: "user" });
-    console.log(users, "-  -------------users----");
     res.status(200).json({ success: true, users });
   } catch (error) {
     console.error("Token verification failed:", error);
     res.status(500).json({
+      success: false,
       message: "Error fetching users",
       error: error.message,
     });

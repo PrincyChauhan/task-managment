@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 
 const TaskCreation = () => {
@@ -6,8 +6,25 @@ const TaskCreation = () => {
   const [taskDescription, setTaskDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [assignedTo, setAssignedTo] = useState("");
+  const [subtasks, setSubtasks] = useState([{ title: "", description: "" }]);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  const handleSubtaskChange = (index, e) => {
+    const newSubtasks = [...subtasks];
+    newSubtasks[index][e.target.name] = e.target.value;
+    setSubtasks(newSubtasks);
+  };
+
+  const handleAddSubtask = () => {
+    setSubtasks([...subtasks, { title: "", description: "" }]);
+  };
+
+  const handleRemoveSubtask = (index) => {
+    const newSubtasks = [...subtasks];
+    newSubtasks.splice(index, 1);
+    setSubtasks(newSubtasks);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,12 +35,17 @@ const TaskCreation = () => {
       setErrorMessage("No token provided.");
       return;
     }
+    if (!assignedTo) {
+      setErrorMessage("Assigned user ID is required.");
+      return;
+    }
 
     const taskData = {
       title: taskTitle,
       description: taskDescription,
       dueDate: dueDate,
       assignedTo: assignedTo,
+      subtasks: subtasks,
     };
 
     console.log("taskData===", taskData);
@@ -31,7 +53,7 @@ const TaskCreation = () => {
     try {
       const response = await axios.post(
         "http://localhost:3000/api/task/create",
-        { taskData },
+        taskData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -125,6 +147,45 @@ const TaskCreation = () => {
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
             required
           />
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 text-left">
+            Subtasks
+          </label>
+          {subtasks.map((subtask, index) => (
+            <div key={index} className="mb-2">
+              <input
+                type="text"
+                name="title"
+                value={subtask.title}
+                onChange={(e) => handleSubtaskChange(index, e)}
+                placeholder={`Subtask ${index + 1} Title`}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+              />
+              <textarea
+                name="description"
+                value={subtask.description}
+                onChange={(e) => handleSubtaskChange(index, e)}
+                placeholder={`Subtask ${index + 1} Description`}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+              />
+              <button
+                type="button"
+                onClick={() => handleRemoveSubtask(index)}
+                className="text-red-500 mt-2"
+              >
+                Remove Subtask
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={handleAddSubtask}
+            className="text-blue-500"
+          >
+            Add Subtask
+          </button>
         </div>
 
         <button

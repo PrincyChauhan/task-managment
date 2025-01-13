@@ -6,6 +6,7 @@ const createSubTask = async (req, res) => {
     const task = await Task.findById(taskId);
     if (!task) {
       return res.status(404).json({
+        success: false,
         message: "Task not found",
       });
     }
@@ -19,6 +20,7 @@ const createSubTask = async (req, res) => {
 
     await task.save();
     res.status(201).json({
+      success: true,
       message: "Subtask created successfully",
       subtask: newSubtask,
     });
