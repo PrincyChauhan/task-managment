@@ -26,6 +26,12 @@ const Sidebar = () => {
               <div className="text-lg">Create Sub Tasks</div>
             </Link>
           </li>
+
+          <li>
+            <Link to="/dashboard/tasks/list" className="hover:text-gray-400">
+              <div className="text-lg">Tasks List</div>
+            </Link>
+          </li>
         </ul>
       </div>
     </div>

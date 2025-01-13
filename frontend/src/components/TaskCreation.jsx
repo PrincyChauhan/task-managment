@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const TaskCreation = () => {
@@ -9,6 +10,8 @@ const TaskCreation = () => {
   const [subtasks, setSubtasks] = useState([{ title: "", description: "" }]);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  const navigate = useNavigate();
 
   const handleSubtaskChange = (index, e) => {
     const newSubtasks = [...subtasks];
@@ -64,14 +67,24 @@ const TaskCreation = () => {
       console.log("response===", response.data);
 
       if (response.data.message === "Task created successfully.") {
+        // setSuccessMessage("Task created successfully!");
+        // setTaskTitle("");
+        // setTaskDescription("");
+        // setDueDate("");
+        // setAssignedTo("");
+        // setTimeout(() => {
+        //   setSuccessMessage("");
+        //   navigate("/dashboard/tasks");
+        // }, 3000);
         setSuccessMessage("Task created successfully!");
         setTaskTitle("");
         setTaskDescription("");
         setDueDate("");
         setAssignedTo("");
-        setTimeout(() => {
-          setSuccessMessage("");
-        }, 3000);
+        setSubtasks([{ title: "", description: "" }]);
+
+        // Immediately redirect after task creation
+        navigate("/dashboard/tasks/list");
       } else {
         setErrorMessage("Failed to create task.");
       }

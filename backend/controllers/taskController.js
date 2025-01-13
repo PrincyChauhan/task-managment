@@ -77,33 +77,49 @@ const deleteTask = async (req, res) => {
   try {
     const task = await Task.findById(taskId);
     if (!task) {
-      return res.status(404).json({ message: "Task not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Task not found." });
     }
     if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Only admins can delete tasks." });
+      return res
+        .status(403)
+        .json({ success: false, message: "Only admins can delete tasks." });
     }
     task.isDeleted = true;
     task.deletedAt = new Date();
     await task.save();
 
-    res.status(200).json({ message: "Task deleted successfully." });
+    res
+      .status(200)
+      .json({ success: true, message: "Task deleted successfully." });
   } catch (error) {
-    res.status(500).json({ message: "Error deleting task." });
+    console.log(error);
+    res.status(500).json({ success: false, message: "Error deleting task." });
   }
 };
 
 const getTasksByAdmin = async (req, res) => {
   try {
-    const tasks = await Task.find({ isDeleted: false });
-    if (!tasks) {
+    // const tasks = await Task.find({ isDeleted: false });
+    const tasks = await Task.find({ isDeleted: false }).populate(
+      "assignedTo",
+      "email username"
+    );
+    if (!tasks || tasks.length === 0) {
       return res.status(400).json({
-        message: "Task not found",
+        success: false,
+        message: "No tasks found.",
       });
     }
-    return res.status(200).json({ tasks });
+    return res.status(200).json({
+      success: true,
+      tasks,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({
+      success: false,
       message: "Error getting task.",
       error: error.message,
     });
