@@ -7,6 +7,8 @@ import UserCreation from "./components/UserCreation";
 import TaskCreation from "./components/TaskCreation";
 import TaskListing from "./components/TaskListing";
 import SubTask from "./components/SubTask";
+import UpdateTask from "./components/UpdateTask";
+
 function App() {
   return (
     <Router>
@@ -19,6 +21,7 @@ function App() {
           <Route path="/dashboard/tasks" element={<TaskCreation />} />
           <Route path="/dashboard/tasks/list" element={<TaskListing />} />
           <Route path="/dashboard/subtasks" element={<SubTask />} />
+          <Route path="/update-task/:taskId" element={<UpdateTask />} />
         </Routes>
       </div>
     </Router>

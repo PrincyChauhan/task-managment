@@ -153,15 +153,23 @@ const getTasksByUser = async (req, res) => {
 const updateTaskStatus = async (req, res) => {
   try {
     const { taskId, status } = req.body;
+    if (!mongoose.Types.ObjectId.isValid(taskId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid taskId",
+      });
+    }
     const task = await Task.findById(taskId);
     if (!task) {
       return res.status(404).json({
+        success: false,
         message: "Task not found",
       });
     }
     task.status = status;
     await task.save();
     res.status(200).json({
+      success: true,
       message: "Task status updated successfully",
       task,
     });
