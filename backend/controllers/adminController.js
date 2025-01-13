@@ -70,6 +70,11 @@ const inviteUser = async (req, res) => {
   try {
     const { email } = req.body;
 
+    if (!email) {
+      return res.status(400).json({
+        message: "Email is required.",
+      });
+    }
     // Find the user by email
     const user = await User.findOne({ email });
 
@@ -78,7 +83,6 @@ const inviteUser = async (req, res) => {
         .status(404)
         .json({ message: "User not found. Please create the user first." });
     }
-
     // Generate an invitation token
     const inviteToken = crypto.randomBytes(16).toString("hex");
     user.inviteToken = inviteToken;
@@ -97,11 +101,14 @@ const inviteUser = async (req, res) => {
       `;
 
     await sendMail({ email: user.email }, emailSubject, emailMessage);
-
-    res.status(200).json({ message: "Invitation sent successfully." });
+    res
+      .status(200)
+      .json({ success: true, message: "Invitation sent successfully." });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error sending invitation." });
+    res
+      .status(500)
+      .json({ message: "Error sending invitation.", error: error.message });
   }
 };
 
@@ -109,14 +116,16 @@ const acceptInvitation = async (req, res) => {
   try {
     const { inviteToken, password } = req.body;
     if (!inviteToken) {
-      return res.status(400).json({ message: "Invite token is required." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invite token is required." });
     }
 
     const user = await User.findOne({ inviteToken, isInvited: true });
     if (!user) {
       return res
         .status(400)
-        .json({ message: "Invalid or expired invite token." });
+        .json({ success: false, message: "Invalid or expired invite token." });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -128,7 +137,9 @@ const acceptInvitation = async (req, res) => {
 
     await user.save();
 
-    res.status(200).json({ message: "Invitation accepted successfully." });
+    res
+      .status(200)
+      .json({ success: true, message: "Invitation accepted successfully." });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error accepting invitation." });

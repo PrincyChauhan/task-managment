@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 const UserListing = () => {
@@ -128,7 +128,7 @@ const UserListing = () => {
                           : "bg-blue-500 hover:bg-blue-700"
                       }`}
                       disabled={loadingUserId === user.email}
-                      onClick={() => sendInvite(user.email)} // Pass email here
+                      onClick={() => sendInvite(user.email)}
                     >
                       {loadingUserId === user.email ? "Sending..." : "No"}
                     </button>

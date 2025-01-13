@@ -1,4 +1,3 @@
-import React from "react";
 import Sidebar from "./SideBar";
 import UserListing from "./UserListing";
 

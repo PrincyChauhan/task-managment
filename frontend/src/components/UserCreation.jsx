@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const UserCreation = () => {
   const [username, setUsername] = useState("");
@@ -8,6 +9,8 @@ const UserCreation = () => {
   const [role, setRole] = useState("user");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,6 +42,9 @@ const UserCreation = () => {
       setEmail("");
       setPassword("");
       setRole("user");
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 100);
     } catch (error) {
       if (error.response) {
         setError(error.response.data.message || "Error creating user.");
