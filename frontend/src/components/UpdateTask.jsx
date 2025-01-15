@@ -16,54 +16,60 @@ const UpdateTask = () => {
   const navigate = useNavigate();
   const { taskId } = useParams();
 
+  // Fetch task on component mount
   useEffect(() => {
     const fetchTask = async () => {
       try {
         const token = localStorage.getItem("token");
+        if (!token) {
+          setErrorMessage("Unauthorized. Please log in.");
+          return;
+        }
+
         const response = await axios.get(
           `http://localhost:3000/api/task/${taskId}`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
+        console.log("response------------------", response.data);
 
-        console.log("response", response.data);
-        // Check if response is successful and task exists
         if (response.data.success && response.data.task) {
           setTask(response.data.task);
         } else {
           setErrorMessage("Task not found.");
         }
       } catch (error) {
-        console.error("Error fetching task:", error);
-        setErrorMessage("Failed to fetch task.");
+        setErrorMessage(
+          error.response?.data?.message || "Failed to fetch task."
+        );
       }
     };
 
-    if (taskId) {
-      fetchTask();
-    }
+    if (taskId) fetchTask();
   }, [taskId]);
 
-  const handleSubtaskChange = (index, e) => {
-    const newSubtasks = [...task.subtasks];
-    newSubtasks[index][e.target.name] = e.target.value;
-    setTask({ ...task, subtasks: newSubtasks });
-  };
-
-  const handleAddSubtask = () => {
-    setTask({
-      ...task,
-      subtasks: [...task.subtasks, { title: "", description: "" }],
+  const handleSubtaskChange = (index, field, value) => {
+    setTask((prev) => {
+      const newSubtasks = [...prev.subtasks];
+      newSubtasks[index][field] = value;
+      return { ...prev, subtasks: newSubtasks };
     });
   };
 
+  const handleAddSubtask = () => {
+    setTask((prev) => ({
+      ...prev,
+      subtasks: [...prev.subtasks, { title: "", description: "" }],
+    }));
+  };
+
   const handleRemoveSubtask = (index) => {
-    const newSubtasks = [...task.subtasks];
-    newSubtasks.splice(index, 1);
-    setTask({ ...task, subtasks: newSubtasks });
+    setTask((prev) => {
+      const newSubtasks = [...prev.subtasks];
+      newSubtasks.splice(index, 1);
+      return { ...prev, subtasks: newSubtasks };
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -71,42 +77,32 @@ const UpdateTask = () => {
 
     const token = localStorage.getItem("token");
     if (!token) {
-      setErrorMessage("No token provided.");
+      setErrorMessage("Unauthorized. Please log in.");
       return;
     }
 
-    const taskData = {
-      title: task.title,
-      description: task.description,
-      status: task.status,
-      dueDate: task.dueDate,
-      assignedTo: task.assignedTo,
-      subtasks: task.subtasks,
-    };
-
     try {
-      const response = await axios.put(
+      const response = await axios.post(
         `http://localhost:3000/api/task/update/${taskId}`,
-        taskData,
+        task,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
+
+      console.log("response---update---", response.data);
 
       if (response.data.success) {
         setSuccessMessage("Task updated successfully!");
         setTimeout(() => {
           setSuccessMessage("");
-          navigate("/dashboard/tasks/list"); // Redirect after success
+          navigate("/dashboard/tasks/list");
         }, 3000);
       } else {
         setErrorMessage(response.data.message || "Failed to update task.");
       }
     } catch (error) {
-      console.error("Error updating task:", error);
-      setErrorMessage(error.response?.data.message || "Error updating task.");
+      setErrorMessage(error.response?.data?.message || "Error updating task.");
     }
   };
 
@@ -181,14 +177,18 @@ const UpdateTask = () => {
                 type="text"
                 name="title"
                 value={subtask.title}
-                onChange={(e) => handleSubtaskChange(index, e)}
+                onChange={(e) =>
+                  handleSubtaskChange(index, "title", e.target.value)
+                }
                 placeholder={`Subtask ${index + 1} Title`}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
               />
               <textarea
                 name="description"
                 value={subtask.description}
-                onChange={(e) => handleSubtaskChange(index, e)}
+                onChange={(e) =>
+                  handleSubtaskChange(index, "description", e.target.value)
+                }
                 placeholder={`Subtask ${index + 1} Description`}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
               />

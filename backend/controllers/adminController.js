@@ -46,11 +46,6 @@ const signin = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Invalid credentials." });
     }
-    if (user.role !== "admin") {
-      return res
-        .status(403)
-        .json({ success: false, message: "Only admins can sign in." });
-    }
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET,
@@ -65,51 +60,61 @@ const signin = async (req, res) => {
   }
 };
 
-// Admin creates a user and sends an invitation
-const inviteUser = async (req, res) => {
+const createInviteUser = async (req, res) => {
   try {
-    const { email } = req.body;
-
-    if (!email) {
+    const { username, email, password, role } = req.body;
+    const adminId = req.user.userId;
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
       return res.status(400).json({
-        message: "Email is required.",
+        message: "User Already Exists",
       });
     }
-    // Find the user by email
-    const user = await User.findOne({ email });
 
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found. Please create the user first.",
-      });
-    }
-    // Generate an invitation token
-    const inviteToken = crypto.randomBytes(16).toString("hex");
-    user.inviteToken = inviteToken;
-    user.isInvited = true;
-    user.inviteSentAt = new Date();
-    await user.save();
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Send invitation email
-    const emailSubject = "Invitation to join Task Manager";
-    const emailMessage = `
-        <h1>Hello ${user.username},</h1>
-        <p>You have been invited to join our platform as a ${user.role}.</p>
-        <p>Use the following token to complete your registration:</p>
-        <code>${inviteToken}</code>
-        <p>Note: This token is valid for 24hr only.</p>
-      `;
+    // Create new user object
+    const newUser = new User({
+      username,
+      email,
+      password: hashedPassword,
+      role: role || "user",
+      isInvited: true,
+      invitedBy: adminId,
+    });
 
-    await sendMail({ email: user.email }, emailSubject, emailMessage);
-    res
-      .status(200)
-      .json({ success: true, message: "Invitation sent successfully." });
+    // Save the new user to the database
+    await newUser.save();
+
+    // Send invite email
+    const subject = "Welcome! Your Account Details";
+    const message = `
+      <p>Hi ${username},</p>
+      <p>Your account has been successfully created.</p>
+      <p>Login with the following credentials:</p>
+      <ul>
+      <li>Username:${username}</li>
+        <li>Email: ${email}</li>
+        <li>Password: ${password}</li>
+      </ul>
+      <p>Best Regards, Your Team</p>
+    `;
+
+    // Send the invitation email
+    await sendMail(newUser, subject, message);
+
+    // Respond with success message
+    res.status(200).json({
+      success: true,
+      message: "User created and invited successfully.",
+      user: newUser,
+    });
   } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ message: "Error sending invitation.", error: error.message });
+    console.error("Error creating user:", error);
+    res.status(500).json({
+      message: "Error creating user",
+      error: error.message,
+    });
   }
 };
 
@@ -223,40 +228,6 @@ const resetPassword = async (req, res) => {
   }
 };
 
-const createUser = async (req, res) => {
-  try {
-    const { username, email, password, role } = req.body;
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({
-        message: "User already exists.",
-      });
-    }
-    // Create new user
-    const newUser = new User({
-      username,
-      email,
-      password,
-      role: role || "user",
-      isInvited: false,
-    });
-    await newUser.save();
-
-    // Respond with success
-    res.status(200).json({
-      success: true,
-      message: "User created successfully.",
-      user: newUser,
-    });
-  } catch (error) {
-    console.error("Token verification failed:", error);
-    res.status(500).json({
-      message: "Error creating user",
-      error: error.message,
-    });
-  }
-};
-
 const getUsers = async (req, res) => {
   try {
     const users = await User.find({ role: "user" });
@@ -275,10 +246,9 @@ const getUsers = async (req, res) => {
 export {
   signup,
   signin,
-  inviteUser,
   acceptInvitation,
   forgotPassword,
   resetPassword,
-  createUser,
   getUsers,
+  createInviteUser,
 };

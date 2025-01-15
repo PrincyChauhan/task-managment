@@ -219,9 +219,11 @@ const sendReminderForDueDate = async (req, res) => {
 };
 
 const getTasks = async (req, res) => {
-  const { taskId } = req.params;
+  // const { taskId } = req.params;
   try {
-    const task = await Task.findById(taskId);
+    const task = await Task.findById(req.params.taskId)
+      .populate("assignedTo", "username")
+      .lean();
     if (!task) {
       return res
         .status(404)
