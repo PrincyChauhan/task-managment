@@ -9,7 +9,7 @@ import TaskListing from "./components/TaskListing";
 import SubTask from "./components/SubTask";
 import UpdateTask from "./components/UpdateTask";
 import UserTaskListing from "./components/UserAssignTaskListing";
-
+import ForgotPassword from "./components/ForgotPassword";
 function App() {
   return (
     <Router>
@@ -24,6 +24,7 @@ function App() {
           <Route path="/user-tasks" element={<UserTaskListing />} />
           <Route path="/dashboard/subtasks" element={<SubTask />} />
           <Route path="/update-task/:taskId" element={<UpdateTask />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
         </Routes>
       </div>
     </Router>
