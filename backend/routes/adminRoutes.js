@@ -17,7 +17,7 @@ adminRouter.post("/signin", signin);
 
 adminRouter.post("/create-invite", isAdmin, createInviteUser);
 adminRouter.post("/accept-invitation", acceptInvitation);
-adminRouter.get("/users", isAdmin, getUsers);
+adminRouter.get("/users", getUsers);
 //forgot password
 adminRouter.post("/forgot-password", forgotPassword);
 adminRouter.post("/rest-password", resetPassword);

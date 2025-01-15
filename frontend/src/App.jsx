@@ -8,6 +8,7 @@ import TaskCreation from "./components/TaskCreation";
 import TaskListing from "./components/TaskListing";
 import SubTask from "./components/SubTask";
 import UpdateTask from "./components/UpdateTask";
+import UserTaskListing from "./components/UserAssignTaskListing";
 
 function App() {
   return (
@@ -19,7 +20,8 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin/user" element={<UserCreation />} />
           <Route path="/dashboard/tasks" element={<TaskCreation />} />
-          <Route path="/dashboard/tasks/list" element={<TaskListing />} />
+          <Route path="/admin-tasks" element={<TaskListing />} />
+          <Route path="/user-tasks" element={<UserTaskListing />} />
           <Route path="/dashboard/subtasks" element={<SubTask />} />
           <Route path="/update-task/:taskId" element={<UpdateTask />} />
         </Routes>

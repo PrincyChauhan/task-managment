@@ -4,13 +4,14 @@ import UserListing from "./UserListing";
 
 const Dashboard = () => {
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Assuming you're storing token in localStorage
+    localStorage.removeItem("token");
     window.location.href = "/login";
   };
+  const userRole = localStorage.getItem("role");
 
   return (
     <div className="flex">
-      <Sidebar />
+      {userRole === "admin" && <Sidebar />}
       <div className="w-full p-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Welcome to the Dashboard</h1>

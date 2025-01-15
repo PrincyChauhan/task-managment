@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -6,16 +6,18 @@ import "react-toastify/dist/ReactToastify.css";
 
 const TaskListing = () => {
   const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
-  const [deleteTask, setDeleteTask] = useState({});
 
-  // Fetch tasks from the backend
   useEffect(() => {
     const fetchTasks = async () => {
+      setLoading(true);
       const token = localStorage.getItem("token");
+      const role = localStorage.getItem("role");
 
-      if (!token) {
-        setErrorMessage("No token provided.");
+      if (!token || role !== "admin") {
+        setErrorMessage("Access denied: Admins only.");
+        setLoading(false);
         return;
       }
 
@@ -23,96 +25,77 @@ const TaskListing = () => {
         const response = await axios.get(
           "http://localhost:3000/api/task/tasks",
           {
-            headers: {
-              Authorization: `Bearer ${token}`, // Send token in headers
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
-
-        // If no tasks are found
-        if (!response.data.success || response.data.tasks.length === 0) {
-          setErrorMessage("No tasks found.");
-        } else {
+        if (response.data.success) {
           setTasks(response.data.tasks);
+        } else {
+          setErrorMessage(response.data.message || "Error fetching tasks.");
         }
       } catch (error) {
-        console.error("Error fetching tasks:", error);
-        toast.error("Failed to load tasks.");
+        setErrorMessage(
+          error.response?.data?.message || "Failed to load tasks."
+        );
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchTasks();
   }, []);
 
-  // Handle actual task deletion
-  const handleDeleteTask = async (taskId) => {
-    const token = localStorage.getItem("token");
+  const handleDeleteClick = async (taskId) => {
     try {
+      const token = localStorage.getItem("token");
       const response = await axios.delete(
         `http://localhost:3000/api/task/delete/${taskId}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if (response.status === 200) {
-        // Update state to remove the deleted task
+
+      if (response.data.success) {
+        toast.success("Task deleted successfully!");
         setTasks((prevTasks) =>
           prevTasks.filter((task) => task._id !== taskId)
         );
-        toast.success("Task deleted successfully.");
+      } else {
+        toast.error("Failed to delete task.");
       }
     } catch (error) {
-      console.error("Error deleting task:", error);
-      toast.error("Failed to delete task.");
+      console.log(error);
+      toast.error("An error occurred while deleting the task.");
     }
   };
 
-  const handleDeleteClick = (taskId) => {
-    setDeleteTask((prevState) => ({
-      ...prevState,
-      [taskId]: !prevState[taskId],
-    }));
-
-    // Ask for confirmation before deleting
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this task?"
-    );
-    if (confirmDelete) {
-      handleDeleteTask(taskId);
-    }
-  };
-
-  // Handle status change
   const handleStatusChange = async (taskId, newStatus) => {
-    const token = localStorage.getItem("token");
-
-    console.log("=======taskId statis=============", taskId, newStatus);
-
     try {
+      const token = localStorage.getItem("token");
+
+      if (!taskId || !newStatus) {
+        toast.error("Invalid task or status.");
+        return;
+      }
       const response = await axios.post(
         "http://localhost:3000/api/task/status",
         { taskId, status: newStatus },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      if (response.status === 200) {
-        // Update the status locally after successful update
+      if (response.data.success) {
+        toast.success("Task status updated successfully!");
         setTasks((prevTasks) =>
           prevTasks.map((task) =>
             task._id === taskId ? { ...task, status: newStatus } : task
           )
         );
-        toast.success("Task status updated successfully.");
+      } else {
+        toast.error("Failed to update task status.");
       }
     } catch (error) {
-      console.error("Error updating task status:", error);
-      toast.error("Failed to update task status.");
+      console.log(error.response?.data?.message || error.message);
+      toast.error("An error occurred while updating task status.");
     }
   };
 
@@ -120,7 +103,9 @@ const TaskListing = () => {
     <div className="min-h-screen bg-gray-100 p-6">
       <ToastContainer />
       <div className="bg-white p-6 rounded shadow-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Tasks List</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">
+          Tasks List (Admin View)
+        </h2>
 
         {errorMessage && (
           <div className="mb-4 text-red-600 bg-red-100 p-2 rounded text-center">
@@ -128,7 +113,9 @@ const TaskListing = () => {
           </div>
         )}
 
-        {tasks.length > 0 ? (
+        {loading ? (
+          <p className="text-center">Loading tasks...</p>
+        ) : tasks.length > 0 ? (
           <table className="min-w-full table-auto">
             <thead>
               <tr>
@@ -149,7 +136,8 @@ const TaskListing = () => {
                       : "Unassigned"}
                   </td>
                   <td className="px-4 py-2 border">
-                    {new Date(task.dueDate).toLocaleDateString()}
+                    {/* {format(new Date(task.dueDate), "dd/MM/yyyy")} */}
+                    {task.dueDate}
                   </td>
                   <td className="px-4 py-2 border">
                     <select
@@ -167,16 +155,12 @@ const TaskListing = () => {
                   <td className="px-4 py-2 border flex gap-4 justify-center">
                     <button
                       onClick={() => handleDeleteClick(task._id)}
-                      className={`text-xl ${
-                        deleteTask[task._id] ? "text-red-600" : "text-green-600"
-                      } hover:opacity-75`}
+                      className="text-xl text-red-600 hover:opacity-75"
                     >
                       🗑️
                     </button>
-
-                    {/* Add the update button */}
                     <Link
-                      to={`/update-task/${task._id}`} // Navigate to update task page with task ID
+                      to={`/update-task/${task._id}`}
                       className="text-blue-600 hover:text-blue-800"
                     >
                       ✏️
@@ -187,7 +171,12 @@ const TaskListing = () => {
             </tbody>
           </table>
         ) : (
-          <p className="text-center">No tasks available.</p>
+          <div className="text-center">
+            <p>No tasks found for the admin.</p>
+            <Link to="/create-task" className="text-blue-600 hover:underline">
+              Create a new task
+            </Link>
+          </div>
         )}
       </div>
     </div>

@@ -51,9 +51,13 @@ const signin = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
-    res
-      .status(200)
-      .json({ success: true, message: "Signin successfully.", token });
+    res.status(200).json({
+      success: true,
+      message: "Signin successfully.",
+      token,
+      role: user.role,
+      userId: user._id,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "Error during signin." });
