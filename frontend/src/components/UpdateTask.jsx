@@ -16,7 +16,6 @@ const UpdateTask = () => {
   const navigate = useNavigate();
   const { taskId } = useParams();
 
-  // Fetch task data when component mounts to pre-fill the form
   useEffect(() => {
     const fetchTask = async () => {
       try {
@@ -29,14 +28,23 @@ const UpdateTask = () => {
             },
           }
         );
-        setTask(response.data.task);
+
+        console.log("response", response.data);
+        // Check if response is successful and task exists
+        if (response.data.success && response.data.task) {
+          setTask(response.data.task);
+        } else {
+          setErrorMessage("Task not found.");
+        }
       } catch (error) {
         console.error("Error fetching task:", error);
         setErrorMessage("Failed to fetch task.");
       }
     };
 
-    fetchTask();
+    if (taskId) {
+      fetchTask();
+    }
   }, [taskId]);
 
   const handleSubtaskChange = (index, e) => {

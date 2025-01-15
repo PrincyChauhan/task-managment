@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -10,9 +10,39 @@ const TaskCreation = () => {
   const [subtasks, setSubtasks] = useState([{ title: "", description: "" }]);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [users, setUsers] = useState([]);
 
+  console.log(users, "--------------");
   const navigate = useNavigate();
 
+  // Fetch users from the backend
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/admin/users",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log("response===========", response.data.users);
+
+        if (response.data.success) {
+          setUsers(response.data.users);
+        } else {
+          setErrorMessage("Failed to fetch users.");
+        }
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        setErrorMessage("Error fetching users.");
+      }
+    };
+
+    fetchUsers();
+  }, []);
   const handleSubtaskChange = (index, e) => {
     const newSubtasks = [...subtasks];
     newSubtasks[index][e.target.name] = e.target.value;
@@ -151,15 +181,21 @@ const TaskCreation = () => {
 
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 text-left">
-            Assigned To (User ID)
+            Assigned To
           </label>
-          <input
-            type="text"
-            id="assignedTo"
+          <select
+            value={assignedTo}
             onChange={(e) => setAssignedTo(e.target.value)}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
             required
-          />
+          >
+            <option value="">Select a user</option>
+            {users.map((user) => (
+              <option key={user._id} value={user._id}>
+                {user.username}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="mb-4">
