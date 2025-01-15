@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const TaskListing = () => {
   const [tasks, setTasks] = useState([]);
@@ -35,7 +37,7 @@ const TaskListing = () => {
         }
       } catch (error) {
         console.error("Error fetching tasks:", error);
-        setErrorMessage("Failed to load tasks.");
+        toast.error("Failed to load tasks.");
       }
     };
 
@@ -59,11 +61,11 @@ const TaskListing = () => {
         setTasks((prevTasks) =>
           prevTasks.filter((task) => task._id !== taskId)
         );
-        alert("Task deleted successfully.");
+        toast.success("Task deleted successfully.");
       }
     } catch (error) {
       console.error("Error deleting task:", error);
-      alert("Failed to delete task.");
+      toast.error("Failed to delete task.");
     }
   };
 
@@ -106,16 +108,17 @@ const TaskListing = () => {
             task._id === taskId ? { ...task, status: newStatus } : task
           )
         );
-        alert("Task status updated successfully.");
+        toast.success("Task status updated successfully.");
       }
     } catch (error) {
       console.error("Error updating task status:", error);
-      alert("Failed to update task status.");
+      toast.error("Failed to update task status.");
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
+      <ToastContainer />
       <div className="bg-white p-6 rounded shadow-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Tasks List</h2>
 

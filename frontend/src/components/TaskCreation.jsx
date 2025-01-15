@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
 const TaskCreation = () => {
@@ -37,7 +39,7 @@ const TaskCreation = () => {
         }
       } catch (error) {
         console.error("Error fetching users:", error);
-        setErrorMessage("Error fetching users.");
+        toast.error("Error fetching users.");
       }
     };
 
@@ -97,15 +99,6 @@ const TaskCreation = () => {
       console.log("response===", response.data);
 
       if (response.data.message === "Task created successfully.") {
-        // setSuccessMessage("Task created successfully!");
-        // setTaskTitle("");
-        // setTaskDescription("");
-        // setDueDate("");
-        // setAssignedTo("");
-        // setTimeout(() => {
-        //   setSuccessMessage("");
-        //   navigate("/dashboard/tasks");
-        // }, 3000);
         setSuccessMessage("Task created successfully!");
         setTaskTitle("");
         setTaskDescription("");
@@ -130,6 +123,7 @@ const TaskCreation = () => {
 
   return (
     <div className="p-6 bg-white shadow-md rounded">
+      <ToastContainer />
       <h2 className="text-2xl font-semibold mb-4">Create Task</h2>
 
       {/* Error or Success Message */}

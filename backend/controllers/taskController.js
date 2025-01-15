@@ -41,6 +41,7 @@ const updateTask = async (req, res) => {
   const { title, description, status, dueDate, assignedTo } = req.body;
   try {
     const task = await Task.findById(taskId);
+    console.log("task.......", task);
     if (!task) {
       return res
         .status(404)
@@ -217,6 +218,26 @@ const sendReminderForDueDate = async (req, res) => {
   }
 };
 
+const getTasks = async (req, res) => {
+  const { taskId } = req.params;
+  try {
+    const task = await Task.findById(taskId);
+    if (!task) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Task not found." });
+    }
+    res.status(200).json({ success: true, task });
+  } catch (error) {
+    console.error("Error fetching task:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching task.",
+      error: error.message,
+    });
+  }
+};
+
 export {
   createTask,
   updateTask,
@@ -225,4 +246,5 @@ export {
   getTasksByUser,
   updateTaskStatus,
   sendReminderForDueDate,
+  getTasks,
 };

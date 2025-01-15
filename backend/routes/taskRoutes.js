@@ -7,6 +7,7 @@ import {
   getTasksByUser,
   updateTaskStatus,
   sendReminderForDueDate,
+  getTasks,
 } from "../controllers/taskController.js";
 import { isAdmin } from "../middlewares/auth.js";
 const taskRouter = express.Router();
@@ -18,5 +19,6 @@ taskRouter.get("/tasks", isAdmin, getTasksByAdmin);
 taskRouter.get("/user/:userId", getTasksByUser);
 taskRouter.post("/status", updateTaskStatus);
 taskRouter.post("/reminder", sendReminderForDueDate);
+taskRouter.get("/:taskId", getTasks);
 
 export default taskRouter;
