@@ -104,6 +104,10 @@ const TaskListing = () => {
     setSearchQuery(e.target.value);
   };
 
+  const sortedTasks = [...tasks].sort(
+    (a, b) => new Date(a.dueDate) - new Date(b.dueDate)
+  );
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <ToastContainer />
@@ -142,7 +146,7 @@ const TaskListing = () => {
               </tr>
             </thead>
             <tbody>
-              {tasks
+              {sortedTasks
                 .filter(
                   (task) =>
                     task.title

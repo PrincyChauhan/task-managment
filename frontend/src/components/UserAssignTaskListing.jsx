@@ -78,6 +78,10 @@ const UserTaskListing = () => {
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
+  const sortedTasks = [...tasks].sort(
+    (a, b) => new Date(a.dueDate) - new Date(b.dueDate)
+  );
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <ToastContainer />
@@ -114,7 +118,7 @@ const UserTaskListing = () => {
               </tr>
             </thead>
             <tbody>
-              {tasks
+              {sortedTasks
                 .filter((task) =>
                   task.title.toLowerCase().includes(serachQuery.toLowerCase())
                 )

@@ -78,7 +78,7 @@ const TaskCreation = () => {
     const taskData = {
       title: taskTitle,
       description: taskDescription,
-      dueDate: dueDate,
+      dueDate: new Date(dueDate),
       assignedTo: assignedTo,
       subtasks: subtasks,
     };
