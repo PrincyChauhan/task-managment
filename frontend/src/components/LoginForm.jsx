@@ -37,7 +37,7 @@ const LoginForm = () => {
 
         // Route mapping based on the role
         const roleRoutes = {
-          admin: "/admin-tasks",
+          admin: "/dashboard",
           user: "/user-tasks",
         };
 

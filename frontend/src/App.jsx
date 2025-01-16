@@ -18,11 +18,11 @@ function App() {
           <Route path="/" element={<SignupForm />} />
           <Route path="/signin" element={<LoginForm />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/admin/user" element={<UserCreation />} />
-          <Route path="/dashboard/tasks" element={<TaskCreation />} />
-          <Route path="/admin-tasks" element={<TaskListing />} />
+          <Route path="/create/user" element={<UserCreation />} />
+          <Route path="/create/tasks" element={<TaskCreation />} />
+          <Route path="/dashboard/tasks/list" element={<TaskListing />} />
           <Route path="/user-tasks" element={<UserTaskListing />} />
-          <Route path="/dashboard/subtasks" element={<SubTask />} />
+          <Route path="/create/subtasks" element={<SubTask />} />
           <Route path="/update-task/:taskId" element={<UpdateTask />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
         </Routes>

@@ -136,8 +136,11 @@ const TaskListing = () => {
                       : "Unassigned"}
                   </td>
                   <td className="px-4 py-2 border">
-                    {/* {format(new Date(task.dueDate), "dd/MM/yyyy")} */}
-                    {task.dueDate}
+                    {new Date(task.dueDate).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
                   </td>
                   <td className="px-4 py-2 border">
                     <select
@@ -152,7 +155,7 @@ const TaskListing = () => {
                       <option value="completed">Completed</option>
                     </select>
                   </td>
-                  <td className="px-4 py-2 border flex gap-4 justify-center">
+                  <td className="px-4 py-2 border">
                     <button
                       onClick={() => handleDeleteClick(task._id)}
                       className="text-xl text-red-600 hover:opacity-75"

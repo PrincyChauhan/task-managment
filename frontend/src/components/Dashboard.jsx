@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import Sidebar from "./SideBar";
+import Sidebar from "./Sidebar";
 import UserListing from "./UserListing";
 
 const Dashboard = () => {
@@ -14,7 +14,7 @@ const Dashboard = () => {
       {userRole === "admin" && <Sidebar />}
       <div className="w-full p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Welcome to the Dashboard</h1>
+          <h1 className="text-3xl font-bold">Welcome to the Admin Dashboard</h1>
           <nav>
             <Link
               to="/"

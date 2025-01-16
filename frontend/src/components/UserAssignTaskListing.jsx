@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 const UserTaskListing = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -48,6 +47,32 @@ const UserTaskListing = () => {
     fetchUserTasks();
   }, [navigate]);
 
+  const handleStatusChange = async (taskId, newStatus) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!taskId || !newStatus) {
+        toast.error("Invalid task or status");
+      }
+      const response = await axios.post(
+        "http://localhost:3000/api/task/status",
+        { taskId, status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.data.success) {
+        toast.success("Task status updated successfully!");
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task._id === taskId ? { ...task, status: newStatus } : task
+          )
+        );
+      } else {
+        toast.error("Failed to update task status.");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Error updating task status. Please try again.");
+    }
+  };
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <ToastContainer />
@@ -68,7 +93,7 @@ const UserTaskListing = () => {
           <table className="min-w-full table-auto">
             <thead>
               <tr>
-                <th className="px-4 py-2 border">Title</th>
+                <th className="px-4 py-2 border">Task Title</th>
                 <th className="px-4 py-2 border">Due Date</th>
                 <th className="px-4 py-2 border">Status</th>
               </tr>
@@ -77,9 +102,21 @@ const UserTaskListing = () => {
               {tasks.map((task) => (
                 <tr key={task._id}>
                   <td className="px-4 py-2 border">{task.title}</td>
-                  <td className="px-4 py-2 border">{task.dueDate}</td>
                   <td className="px-4 py-2 border">
-                    <select value={task.status} className="border p-2">
+                    {new Date(task.dueDate).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </td>
+                  <td className="px-4 py-2 border">
+                    <select
+                      value={task.status}
+                      onChange={(e) =>
+                        handleStatusChange(task._id, e.target.value)
+                      }
+                      className="border p-2"
+                    >
                       <option value="pending">Pending</option>
                       <option value="in-progress">In Progress</option>
                       <option value="completed">Completed</option>

@@ -9,6 +9,7 @@ const UserCreation = () => {
   const [role, setRole] = useState("user");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -22,9 +23,10 @@ const UserCreation = () => {
       setError("No token provided.");
       return;
     }
+    setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/admin/create-user", // Replace with your actual endpoint
+        "http://localhost:3000/api/admin/create-invite", // Replace with your actual endpoint
         {
           username,
           email,
@@ -129,8 +131,9 @@ const UserCreation = () => {
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
+            disabled={loading} // Disable button while loading
           >
-            Create User
+            {loading ? "Creating..." : "Create User"}
           </button>
         </form>
       </div>

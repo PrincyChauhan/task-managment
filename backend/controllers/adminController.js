@@ -105,8 +105,16 @@ const createInviteUser = async (req, res) => {
     `;
 
     // Send the invitation email
-    await sendMail(newUser, subject, message);
 
+    try {
+      await sendMail(newUser, subject, message);
+    } catch (emailError) {
+      console.error("Error sending email:", emailError);
+      return res.status(500).json({
+        message: "User created but invitation email failed to send",
+        error: emailError.message,
+      });
+    }
     // Respond with success message
     res.status(200).json({
       success: true,
@@ -247,6 +255,21 @@ const getUsers = async (req, res) => {
   }
 };
 
+const logout = async (req, res) => {
+  try {
+    res.clearCookie("token");
+    res.status(200).json({
+      success: true,
+      message: "Logout successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Error during logout",
+    });
+  }
+};
 export {
   signup,
   signin,
@@ -255,4 +278,5 @@ export {
   resetPassword,
   getUsers,
   createInviteUser,
+  logout,
 };

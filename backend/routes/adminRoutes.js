@@ -7,6 +7,7 @@ import {
   resetPassword,
   getUsers,
   createInviteUser,
+  logout,
 } from "../controllers/adminController.js";
 import { isAdmin } from "../middlewares/auth.js";
 
@@ -21,5 +22,7 @@ adminRouter.get("/users", getUsers);
 //forgot password
 adminRouter.post("/forgot-password", forgotPassword);
 adminRouter.post("/rest-password", resetPassword);
+
+adminRouter.post("/logout", logout);
 
 export default adminRouter;
