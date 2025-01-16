@@ -13,6 +13,7 @@ const UpdateTask = () => {
   });
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [users, setUsers] = useState([]);
   const navigate = useNavigate();
   const { taskId } = useParams();
 
@@ -26,6 +27,14 @@ const UpdateTask = () => {
           return;
         }
 
+        const usersResponse = await axios.get(
+          "http://localhost:3000/api/admin/users",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setUsers(usersResponse.data.users);
+
         const response = await axios.get(
           `http://localhost:3000/api/task/${taskId}`,
           {
@@ -35,7 +44,16 @@ const UpdateTask = () => {
         console.log("response------------------", response.data);
 
         if (response.data.success && response.data.task) {
-          setTask(response.data.task);
+          const taskData = response.data.task;
+
+          const formattedDueDate = taskData.dueDate
+            ? new Date(taskData.dueDate).toISOString().split("T")[0]
+            : "";
+
+          setTask({
+            ...taskData,
+            dueDate: formattedDueDate,
+          });
         } else {
           setErrorMessage("Task not found.");
         }
@@ -74,7 +92,7 @@ const UpdateTask = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    console.log("----------------------------,task", task);
     const token = localStorage.getItem("token");
     if (!token) {
       setErrorMessage("Unauthorized. Please log in.");
@@ -153,20 +171,24 @@ const UpdateTask = () => {
             required
           />
         </div>
-
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 text-left">
-            Assigned To (User ID)
+            Assigned To
           </label>
-          <input
-            type="text"
+          <select
             value={task.assignedTo}
             onChange={(e) => setTask({ ...task, assignedTo: e.target.value })}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
             required
-          />
+          >
+            <option value="">Select User</option>
+            {users.map((user) => (
+              <option key={user._id} value={user._id}>
+                {user.username} ({user.email})
+              </option>
+            ))}
+          </select>
         </div>
-
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 text-left">
             Subtasks

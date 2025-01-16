@@ -4,8 +4,6 @@ import axios from "axios";
 const UserListing = () => {
   const [users, setUsers] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
-  const [emailSent, setEmailSent] = useState({});
-  const [loadingUserId, setLoadingUserId] = useState(null);
 
   // Fetch users from the API
   const fetchUsers = async () => {
@@ -32,13 +30,6 @@ const UserListing = () => {
           deleted: user.deletedAt ? true : false, // Initialize 'deleted' state
         }));
         setUsers(updatedUsers);
-
-        // Initialize emailSent state
-        const initialEmailSentState = {};
-        response.data.users.forEach((user) => {
-          initialEmailSentState[user.email] = false; // Use email as key
-        });
-        setEmailSent(initialEmailSentState);
       } else {
         setErrorMessage("Failed to fetch users.");
       }
@@ -48,46 +39,6 @@ const UserListing = () => {
           ? error.response.data.message
           : "Network error or server not reachable."
       );
-    }
-  };
-
-  //   Send invite to user by email
-  const sendInvite = async (userEmail) => {
-    try {
-      setLoadingUserId(userEmail); // Set loading state for the email
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        setErrorMessage("No token provided.");
-        return;
-      }
-
-      const response = await axios.post(
-        "http://localhost:3000/api/admin/invite",
-        { email: userEmail },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.data.success) {
-        setEmailSent((prevState) => ({
-          ...prevState,
-          [userEmail]: true,
-        }));
-      } else {
-        alert("Failed to send invitation.");
-      }
-    } catch (error) {
-      alert(
-        error.response
-          ? "Failed to send invitation."
-          : "Network error or server not reachable."
-      );
-    } finally {
-      setLoadingUserId(null);
     }
   };
 
