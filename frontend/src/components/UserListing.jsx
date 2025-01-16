@@ -111,8 +111,9 @@ const UserListing = () => {
           <thead>
             <tr>
               <th className="px-4 py-2 border">Email</th>
-              <th className="px-4 py-2 border">Send Request</th>
+              <th className="px-4 py-2 border">Invitation Request</th>
               <th className="px-4 py-2 border">Accepted</th>
+              <th className="px-4 py-2 border">User Delete</th>
             </tr>
           </thead>
           <tbody>
