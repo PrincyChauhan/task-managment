@@ -8,6 +8,7 @@ import {
   getUsers,
   createInviteUser,
   logout,
+  deleteUser,
 } from "../controllers/adminController.js";
 import { isAdmin } from "../middlewares/auth.js";
 
@@ -19,10 +20,9 @@ adminRouter.post("/signin", signin);
 adminRouter.post("/create-invite", isAdmin, createInviteUser);
 adminRouter.post("/accept-invitation", acceptInvitation);
 adminRouter.get("/users", getUsers);
-//forgot password
 adminRouter.post("/forgot-password", forgotPassword);
 adminRouter.post("/rest-password", resetPassword);
-
+adminRouter.delete("/delete/:userId", isAdmin, deleteUser);
 adminRouter.post("/logout", logout);
 
 export default adminRouter;

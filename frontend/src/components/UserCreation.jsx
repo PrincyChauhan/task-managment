@@ -131,7 +131,7 @@ const UserCreation = () => {
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
-            disabled={loading} // Disable button while loading
+            disabled={loading}
           >
             {loading ? "Creating..." : "Create User"}
           </button>

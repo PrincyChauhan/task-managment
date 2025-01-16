@@ -27,7 +27,11 @@ const UserListing = () => {
       );
 
       if (response.data.success) {
-        setUsers(response.data.users);
+        const updatedUsers = response.data.users.map((user) => ({
+          ...user,
+          deleted: user.deletedAt ? true : false, // Initialize 'deleted' state
+        }));
+        setUsers(updatedUsers);
 
         // Initialize emailSent state
         const initialEmailSentState = {};
@@ -87,6 +91,42 @@ const UserListing = () => {
     }
   };
 
+  const toggleDeleteUser = async (userId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setErrorMessage("No token Provided");
+        return;
+      }
+      const response = await axios.delete(
+        `http://localhost:3000/api/admin/delete/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.data.success) {
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user._id === userId
+              ? { ...user, deleted: !user.deleted } // Toggle 'deleted' state
+              : user
+          )
+        );
+      } else {
+        alert("Failed to toggle user deletion.");
+      }
+    } catch (error) {
+      console.log(error);
+      alert(
+        error.response
+          ? "Failed to toggle user deletion."
+          : "Network error or server not reachable."
+      );
+    }
+  };
+
   // Fetch users when component mounts
   useEffect(() => {
     fetchUsers();
@@ -120,31 +160,27 @@ const UserListing = () => {
             {users.map((user) => (
               <tr key={user._id}>
                 <td className="px-4 py-2 border">{user.email}</td>
-                <td className="px-4 py-2 border text-center">
-                  {emailSent[user.email] ? (
-                    "Yes"
-                  ) : (
-                    <>
-                      {user.isInvited ? (
-                        "Yes"
-                      ) : (
-                        <button
-                          className={`px-4 py-2 text-white rounded ${
-                            loadingUserId === user.email
-                              ? "bg-gray-400 cursor-not-allowed"
-                              : "bg-blue-500 hover:bg-blue-700"
-                          }`}
-                          disabled={loadingUserId === user.email}
-                          onClick={() => sendInvite(user.email)}
-                        >
-                          {loadingUserId === user.email ? "Sending..." : "No"}
-                        </button>
-                      )}
-                    </>
-                  )}
-                </td>
+                <td className="px-4 py-2 border text-center">Yes</td>
                 <td className="px-4 py-2 border">
-                  {user.isAccepted ? "Yes" : "No"}
+                  <span
+                    className={`font-bold ${
+                      user.isAccepted ? "text-green-600" : "text-red-600"
+                    }`}
+                  >
+                    {user.isAccepted ? "Yes" : "No"}
+                  </span>
+                </td>
+                <td className="px-4 py-2 border text-center">
+                  <button
+                    className={`px-4 py-2 text-white rounded ${
+                      user.deleted
+                        ? "bg-red-500 hover:bg-red-700"
+                        : "bg-green-500 hover:bg-green-700"
+                    }`}
+                    onClick={() => toggleDeleteUser(user._id)}
+                  >
+                    {user.deleted ? "Yes" : "No"}
+                  </button>
                 </td>
               </tr>
             ))}

@@ -243,7 +243,6 @@ const resetPassword = async (req, res) => {
 const getUsers = async (req, res) => {
   try {
     const users = await User.find({ role: "user" });
-    console.log(users, "---------------");
     return res.status(200).json({ success: true, users });
   } catch (error) {
     console.error("Token verification failed:", error);
@@ -251,6 +250,31 @@ const getUsers = async (req, res) => {
       success: false,
       message: "Error fetching users",
       error: error.message,
+    });
+  }
+};
+
+const deleteUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById({ _id: userId });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+    user.deletedAt = user.deletedAt ? null : new Date();
+    await user.save();
+    return res.status(200).json({
+      success: true,
+      message: `User ${user.deletedAt ? "deleted" : "restored"} successfully.`,
+      user,
+    });
+  } catch (error) {
+    console.error("Error in deleteUser:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error toggling user deletion.",
     });
   }
 };
@@ -279,4 +303,5 @@ export {
   getUsers,
   createInviteUser,
   logout,
+  deleteUser,
 };
